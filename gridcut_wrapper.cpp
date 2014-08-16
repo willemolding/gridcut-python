@@ -1,45 +1,52 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 #include <GridGraph_2D_4C.h>
+#include <GridGraph_2D_4C_MT.h>
+
 
 typedef GridGraph_2D_4C<float,float,float> Grid;
+typedef GridGraph_2D_4C_MT<float,float,float> Grid_multicore;
 
 
-///Extract the solution from a grid as a numpy int array.
-///Grid must alread have been solved for this to work.
-static PyObject* grid_to_array(Grid* grid, int width, int height)
+// Extract the solution from a grid as a numpy int array.
+// Grid must alread have been solved for this to work.
+// Returns a single 1D numpy int array where result[x+y*width] is the binary label assigned to node x,y
+static 
+template 
+<class grid_type>
+PyObject* grid_to_array(grid_type* grid, int width, int height)
 {
-
 	//create an array to return the result in
-	npy_intp outdims[2];
-	outdims[0] = height;
-	outdims[1] = width;
-	PyObject *result = PyArray_SimpleNew(2, outdims, NPY_INT);
+	npy_intp outdims[1];
+	outdims[0] = width*height;
+	PyObject *result = PyArray_SimpleNew(1, outdims, NPY_INT);
 
 	//fill the output array with the results
-	for(int i = 0; i < width; i++)
+	for(int i = 0; i < width*height; i++)
 	{
-		for(int j = 0; j < height; j++)
-		{
-			int *data_ptr = (int*)PyArray_GETPTR2(result, j, i);
-			*data_ptr = grid->get_segment(grid->node_id(i,j));
-		}
+		int *data_ptr = (int*)PyArray_GETPTR1(result, i);
+		*data_ptr = grid->get_segment(grid->node_id(i % width,i / width));
 	}
 
 	return result;
 }
 
 
-//Parameters(int width, int height, float pairwise_cost, np float array source, np float array sink)
-static PyObject* gridcut_solve_2D_4C_potts(PyObject* self, PyObject *args)
+// Parameters(int width, int height, float pairwise_cost, np float array source, np float array sink)
+// Source and sink parameters should be a 1D numpy array with width*height elements. 
+// Indexing should be done so that source[x+y*width] is the capacity of node located at (x,y)
+static PyObject* gridcut_solve_2D_4C_potts(PyObject* self, PyObject *args, PyObject *keywds)
 {
 	PyObject *source=NULL,*sink=NULL;
 	PyObject *source_arr=NULL,*sink_arr=NULL;
-	int width,height;
 	float w;
+	int width,height,n_threads=1,block_size=0;
 
-	if (!PyArg_ParseTuple(args, "iifO!O!",&width,&height,&w, &PyArray_Type, &source,
-    	&PyArray_Type, &sink)) return NULL;
+
+	//parse arguments
+	static char *kwlist[] = {"width","height","pairwise_cost","source","sink","n_threads", "block_size", NULL};
+
+	if (!PyArg_ParseTupleAndKeywords(args, keywds, "iifOO|ii", kwlist, &width, &height, &w, &source, &sink, &n_threads, &block_size)) return NULL;
 
     source_arr = PyArray_FROM_OTF(source, NPY_FLOAT32, NPY_IN_ARRAY);
     sink_arr = PyArray_FROM_OTF(sink, NPY_FLOAT32, NPY_IN_ARRAY);
@@ -57,16 +64,28 @@ static PyObject* gridcut_solve_2D_4C_potts(PyObject* self, PyObject *args)
 	}
 
 	//pass it to the gridcut
-	Grid* grid = new Grid(width,height);
-	grid->set_caps(srs,s,edge,edge,edge,edge);
-	grid->compute_maxflow();
 
+	PyObject *result = NULL;
 
-	PyObject *result = grid_to_array(grid, width, height);
+	if(n_threads > 1)
+	{
+		Grid_multicore* grid = new Grid_multicore(width,height,n_threads,block_size);
+		grid->set_caps(srs,s,edge,edge,edge,edge);
+		grid->compute_maxflow();
+		result = grid_to_array<Grid_multicore>(grid, width, height);
+   		delete grid;
+	}
+	else
+	{
+		Grid* grid = new Grid(width,height);
+		grid->set_caps(srs,s,edge,edge,edge,edge);
+		grid->compute_maxflow();
+		result = grid_to_array<Grid>(grid, width, height);
+   		delete grid;
+	}
 
-   	Py_DECREF(source_arr);
+	Py_DECREF(source_arr);
     Py_DECREF(sink_arr);
-   	delete grid;
     delete [] edge;
 
     return result;
@@ -75,14 +94,17 @@ static PyObject* gridcut_solve_2D_4C_potts(PyObject* self, PyObject *args)
 
 
 //def gridcut.2D_4C(int width, int height, source, sink, up, down, left, right)
-static PyObject* gridcut_solve_2D_4C(PyObject* self, PyObject *args)
+static PyObject* gridcut_solve_2D_4C(PyObject* self, PyObject *args, PyObject *keywds)
 {
 	PyObject *source=NULL,*sink=NULL,*up=NULL,*down=NULL,*left=NULL,*right=NULL;
 	PyObject *source_arr=NULL,*sink_arr=NULL,*up_arr=NULL,*down_arr=NULL,*left_arr=NULL,*right_arr=NULL;
-	int width,height;
+	int width,height,n_threads=1,block_size=0;
 
-    if (!PyArg_ParseTuple(args, "iiO!O!O!O!O!O!",&width,&height, &PyArray_Type, &source,
-    	&PyArray_Type, &sink,&PyArray_Type, &up,&PyArray_Type, &down,&PyArray_Type, &left,&PyArray_Type, &right)) return NULL;
+	//parse arguments
+	static char *kwlist[] = {"width","height","source","sink","up","down","left","right","n_threads", "block_size", NULL};
+
+    if(!PyArg_ParseTupleAndKeywords(args,keywds, "iiOOOOOO|ii",kwlist,&width,&height, &source,
+    	 &sink, &up, &down, &left, &right,&n_threads,&block_size)) return NULL;
 
 	source_arr = PyArray_FROM_OTF(source, NPY_FLOAT32, NPY_IN_ARRAY);
     sink_arr = PyArray_FROM_OTF(sink, NPY_FLOAT32, NPY_IN_ARRAY);
@@ -127,10 +149,10 @@ static char gridcut_docs[] =
 static PyMethodDef gridcut_funcs[] = {
 
     {"solve_2D_4C", (PyCFunction)gridcut_solve_2D_4C, 
-     METH_VARARGS, gridcut_docs},
+     METH_VARARGS | METH_KEYWORDS, gridcut_docs},
 
      {"solve_2D_4C_potts", (PyCFunction)gridcut_solve_2D_4C_potts, 
-     METH_VARARGS, gridcut_docs},
+     METH_VARARGS | METH_KEYWORDS, gridcut_docs},
 
     {NULL}
 };
