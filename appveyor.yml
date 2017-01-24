@@ -36,19 +36,22 @@ install:
   # directly to master instead of just PR builds (or the converse).
   # credits: JuliaLang developers.
   - pip install -r requirements.txt
+  - pip install nose coverage
 
 build_script:
   # Build the compiled extension
   - python setup.py build_ext --inplace
+  - python setup.py install
 
 test_script:
-  - pip install nose
   # Run the project tests
-  - nosetests
+  - nosetests -vv
 
 #after_test:
 #  # If tests are successful, create binary packages for the project.
-#  - coverage report
-
-#on_success:
 #  -
+
+on_success:
+  # Could run coveralls here but will leave that to travis tests
+  - echo Build succesful!
+  - coverage report

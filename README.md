@@ -6,6 +6,11 @@
 
 Python wrapper for the [GridCut C++ library](http://www.gridcut.com/index.php) for solving graph cuts for source/sink in regular grids.
 
+Implemented functions:
+ * gridcut_solve_2D_4C
+ * gridcut_solve_2D_4C_potts
+ 
+
 
 ## Installation
 

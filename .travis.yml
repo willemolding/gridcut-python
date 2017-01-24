@@ -25,12 +25,13 @@ before_install:
 install:
   - pip install -r requirements.txt
   - python setup.py build_ext --inplace
-  - pip install nose
+  - pip install nose coverage
 
 script:
   - ls *.so
 #  - ./test_wrapper
   - nosetests
 
-#after_success:
-#  - coverage report
+after_success:
+  - echo Build succesful!
+  - coverage report
