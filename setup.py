@@ -23,9 +23,10 @@ package.retrieve('http://gridcut.com/dl/%s' % PACKAGE, PACKAGE)
 with zipfile.ZipFile(PACKAGE, 'r') as zip_ref:
     zip_ref.extractall('code')
 
-# find the latest version
-PATH_CODE = os.path.join('code', 'include', 'GridCut')
-assert os.path.exists(PATH_CODE), 'missing source code'
+PATH_GRIDCUT = os.path.join('code', 'include', 'GridCut')
+assert os.path.exists(PATH_GRIDCUT), 'missing GridCut source code'
+PATH_ALPHAEXP = os.path.join('code', 'examples', 'include', 'AlphaExpansion')
+assert os.path.exists(PATH_GRIDCUT), 'missing AplhaExpansion source code'
 # parse version
 VERSION = os.path.splitext(PACKAGE)[0].split('-')[-1]
 
@@ -37,8 +38,8 @@ setup(
     ext_modules=[
         Extension(
             'gridcut',
-            ['gridcut_wrapper.cpp'],
-            include_dirs=[PATH_CODE],
+            ['wrapper_gridCut.cpp'],
+            include_dirs=[PATH_GRIDCUT, PATH_ALPHAEXP],
             )
     ],
     include_dirs=[np.get_include()],

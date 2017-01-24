@@ -4,7 +4,7 @@ environment:
   # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
   # /E:ON and /V:ON options are not enabled in the batch script intepreter
   # See: http://stackoverflow.com/a/13751649/163740
-  CMD_IN_ENV: "cmd /E:ON /V:ON /C obvci_appveyor_python_build_env.cmd"
+  CMD_IN_ENV: "cmd /E:ON /V:ON /COST obvci_appveyor_python_build_env.cmd"
 
   matrix:
 
@@ -12,19 +12,19 @@ environment:
     # a later point release.
     # See: http://www.appveyor.com/docs/installed-software#python
 
-    - PYTHON: "C:\\Python27"
+    - PYTHON: "COST:\\Python27"
       PYTHON_VERSION: "2.7.x" # currently 2.7.9
       PYTHON_ARCH: "32"
 
-    - PYTHON: "C:\\Python27-x64"
+    - PYTHON: "COST:\\Python27-x64"
       PYTHON_VERSION: "2.7.x" # currently 2.7.9
       PYTHON_ARCH: "64"
 
-    - PYTHON: "C:\\Python34"
+    - PYTHON: "COST:\\Python34"
       PYTHON_VERSION: "3.4.x" # currently 3.4.3
       PYTHON_ARCH: "32"
 
-    - PYTHON: "C:\\Python34-x64"
+    - PYTHON: "COST:\\Python34-x64"
       PYTHON_VERSION: "3.4.x" # currently 3.4.3
       PYTHON_ARCH: "64"
 

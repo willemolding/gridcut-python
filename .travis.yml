@@ -9,7 +9,7 @@ language:
   - cpp
   - python
 
-sudo: false
+sudo: required
 
 python:
   - 2.7
@@ -20,12 +20,13 @@ cache: pip
 
 before_install:
 #  - mkdir gco_source
-  - pip install --upgrade pip
+#  - pip install --upgrade pip
 
 install:
-  - pip install -r requirements.txt
+  - pip install -r requirements.txt --user
+  - pip install nose coverage --user
+  - pip freeze
   - python setup.py build_ext --inplace
-  - pip install nose coverage
 
 script:
   - ls *.so
