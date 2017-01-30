@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 import gridcut
 
-PW = 2
+PW = 3
 COST = 8
 SOURCE = np.array([[COST, COST, 0, 0],
                    [0, COST, COST, 0],
@@ -45,10 +45,10 @@ def generate_image_unary_term_2cls(width=120, height=80):
     annot = np.zeros((height, width))
     annot[int(0.3 * height):int(0.8 * height),
           int(0.2 * width):int(0.7 * width)] = 1
-    noise = np.random.randn(height, width) - 0.5
+    noise = np.random.randn(height, width)
 
-    source = (0.5 + (1 - annot) * 2 + noise).astype(np.float32)
-    sink = (0.5 + annot * 2 + noise).astype(np.float32)
+    source = ((1 - annot) * 1. + noise).astype(np.float32)
+    sink = (annot * 1. + noise).astype(np.float32)
 
     fig = plt.figure(figsize=(2 * FIG_SIZE, FIG_SIZE))
     plt.subplot(1, 2, 1)
@@ -119,6 +119,6 @@ def test_maxflow_2d_image(width=120, height=80, pw=PW):
                  fig_name='2cls_grid_labels_8c')
 
 
-# if __name__ == '__main__':
-#     test_maxflow_2d_4c_simple()
-#     test_maxflow_2d_image()
+if __name__ == '__main__':
+    test_maxflow_2d_4c_simple()
+    test_maxflow_2d_image()

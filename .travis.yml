@@ -35,4 +35,4 @@ script:
 
 after_success:
   - echo Build succesful!
-  - coverage report
+#  - coverage report

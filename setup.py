@@ -33,14 +33,16 @@ VERSION = os.path.splitext(PACKAGE)[0].split('-')[-1]
 
 setup(
     name='gridcut',
+    package='gridcut',
     version=VERSION,
     # cmdclass={'build_ext': build_ext},
     ext_modules=[
         Extension(
             'gridcut',
-            ['wrapper_gridCut.cpp'],
-            include_dirs=[PATH_GRIDCUT, PATH_ALPHAEXP],
-            )
+            ['wrappers/gridCut.cpp'],
+            include_dirs=['wrappers', os.path.join('code', 'include'),
+                          PATH_GRIDCUT, PATH_ALPHAEXP],
+            ),
     ],
     include_dirs=[np.get_include()],
 )

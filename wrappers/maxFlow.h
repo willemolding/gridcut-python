@@ -222,7 +222,7 @@ static PyObject* gridcut_maxflow_2D_8C_potts(PyObject* self, PyObject *args,
     return result;
 };
 
-static PyMethodDef gridcut_funcs[] = {
+static PyMethodDef maxflow_funcs[] = {
 
     {"maxflow_2D_4C", (PyCFunction)gridcut_maxflow_2D_4C,
      METH_VARARGS | METH_KEYWORDS, "a message"},
@@ -235,16 +235,3 @@ static PyMethodDef gridcut_funcs[] = {
 
     {NULL}
 };
-
-
-extern "C"
-{
-
-	void initgridcut(void)
-	{
-	    Py_InitModule3("gridcut", gridcut_funcs,
-	                   "Extension module example!");
-	    import_array();
-	}
-
-}
