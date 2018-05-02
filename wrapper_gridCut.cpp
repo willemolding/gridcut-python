@@ -41,7 +41,7 @@ Source and sink parameters should be a 1D numpy array with width*height elements
 Indexing should be done so that source[x+y*width] is the capacity of node located at (x,y)
 */
 static PyObject* gridcut_maxflow_2D_4C_potts(PyObject* self, PyObject *args,
-                                           PyObject *keywds)
+                                             PyObject *keywds)
 {
 	PyObject *source=NULL, *sink=NULL;
 	PyObject *source_arr=NULL, *sink_arr=NULL;
@@ -170,7 +170,7 @@ static PyObject* gridcut_maxflow_2D_4C(PyObject* self, PyObject *args, PyObject 
 
 
 static PyObject* gridcut_maxflow_2D_8C_potts(PyObject* self, PyObject *args,
-                                           PyObject *keywds)
+                                             PyObject *keywds)
 {
 	PyObject *source=NULL, *sink=NULL;
 	PyObject *source_arr=NULL, *sink_arr=NULL;
@@ -236,14 +236,33 @@ static PyMethodDef gridcut_funcs[] = {
     {NULL}
 };
 
+// SEE: http://python3porting.com/cextensions.html
+#if PY_MAJOR_VERSION >= 3
+    static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "gridcut",           /* m_name */
+        "Extension module example!",  /* m_doc */
+        -1,                  /* m_size */
+        gridcut_funcs,       /* m_methods */
+        NULL,                /* m_reload */
+        NULL,                /* m_traverse */
+        NULL,                /* m_clear */
+        NULL,                /* m_free */
+    };
+#endif
 
 extern "C"
 {
 
 	void initgridcut(void)
 	{
-	    Py_InitModule3("gridcut", gridcut_funcs,
-	                   "Extension module example!");
+	    #if PY_MAJOR_VERSION >= 3
+            PyModule_Create(&moduledef);
+        #else
+            Py_InitModule3("gridcut", gridcut_funcs,
+	                       "Extension module example!");
+        #endif
+
 	    import_array();
 	}
 
