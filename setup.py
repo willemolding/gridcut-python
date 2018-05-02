@@ -55,19 +55,18 @@ class BuildExt(build_ext):
 setup(
     name='gridcut',
     version=VERSION,
-    # cmdclass={'build_ext': build_ext},
     description='pyGridCut: a python wrapper for the grid-cuts package',
     download_url='http://www.gridcut.com/',
     cmdclass={'build_ext': BuildExt},
-    ext_modules=[
-        Extension(
-            'gridcut',
-            ['wrapper_gridCut.cpp'],
-            include_dirs=[PATH_GRIDCUT, PATH_ALPHAEXP],
-            extra_compile_args=["-fpermissive"]
-            )
+    ext_modules=[Extension(
+        'gridcut',
+        ['gridcut.pyx', 'wrapper_gridCut.cpp'],
+        language='c++',
+        include_dirs=[PATH_GRIDCUT, PATH_ALPHAEXP],
+        extra_compile_args=["-fpermissive"]
+        )
     ],
-    # setup_requires=['requests', 'zipfile'],
+    setup_requires=['requests'],
     install_requires=['numpy'],
     classifiers=[
         'Development Status :: 4 - Beta',
