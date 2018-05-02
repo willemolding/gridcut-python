@@ -1,4 +1,9 @@
-*.zip
 code/
 build/
+*.zip
 *.so
+
+# PyCharm
+.idea/
+# Dropbox sync.
+.dropbox.attr

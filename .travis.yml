@@ -5,34 +5,48 @@
 
 # See doc/travis_notes.txt for some guidelines
 
+env:
+  global:
+    - CODACY_PROJECT_TOKEN=7c50115b6d294ffca7cdb9a9e03012ef
+
 language:
-  - cpp
   - python
+  - cpp
 
 sudo: required
 
 python:
-  - 2.7
-  - 3.4
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
 
 # See http://docs.travis-ci.com/user/caching/#pip-cache
 cache: pip
 
+compiler: g++
+
 before_install:
-#  - mkdir gco_source
-#  - pip install --upgrade pip
+  - pip install --upgrade pip
 
 install:
-  - pip install -r requirements.txt --user
-  - pip install nose coverage --user
-  - pip freeze
-  - python setup.py build_ext --inplace
+  - pip install -r requirements.txt
+  - pip install nose coverage  pytest pytest-cov codecov codacy-coverage
+  # - pip freeze
+  - gcc --version ; python --version ; pip --version ; pwd ; ls -l
 
 script:
+  - python setup.py build_ext --inplace
   - ls *.so
-#  - ./test_wrapper
-  - nosetests
+  - python setup.py install
+  - rm *.so
+#  - nosetests test.py -v --exe --with-doctest --with-xunit --with-coverage  --cover-package=gridcut
+  - coverage run --source gridcut -m py.test test.py -v --doctest-modules
 
 after_success:
   - echo Build succesful!
-  - coverage report
+# the package does not have python code for coverage
+#  - codecov
+#  - coverage xml
+#  - python-codacy-coverage -r coverage.xml
+#  - coverage report
