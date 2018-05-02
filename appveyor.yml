@@ -20,12 +20,12 @@ environment:
       PYTHON_VERSION: "2.7.x" # currently 2.7.9
       PYTHON_ARCH: "64"
 
-    - PYTHON: "COST:\\Python34"
-      PYTHON_VERSION: "3.4.x" # currently 3.4.3
+    - PYTHON: "COST:\\Python35"
+      PYTHON_VERSION: "3.5.x" # currently 3.4.3
       PYTHON_ARCH: "32"
 
-    - PYTHON: "COST:\\Python34-x64"
-      PYTHON_VERSION: "3.4.x" # currently 3.4.3
+    - PYTHON: "COST:\\Python35-x64"
+      PYTHON_VERSION: "3.5.x" # currently 3.4.3
       PYTHON_ARCH: "64"
 
 
@@ -41,7 +41,6 @@ install:
 build_script:
   # Build the compiled extension
   - python setup.py build_ext --inplace
-  - python setup.py install
 
 test_script:
   # Run the project tests
@@ -54,4 +53,4 @@ test_script:
 on_success:
   # Could run coveralls here but will leave that to travis tests
   - echo Build succesful!
-  - coverage report
+  - python setup.py install

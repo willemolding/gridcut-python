@@ -1,7 +1,7 @@
 # pyGridCut
 
-[![Codeship Status for Borda/pyGridCut](https://app.codeship.com/projects/56ab6120-c2ab-0134-0894-26017824c46f/status?branch=master)](https://app.codeship.com/projects/197466)
 [![Build Status](https://travis-ci.org/Borda/GridCut-python.svg?branch=master)](https://travis-ci.org/Borda/GridCut-python)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/e4562d3e10a94c4fa373630cab2e795f)](https://www.codacy.com/app/Borda/GridCut-python?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Borda/GridCut-python&amp;utm_campaign=Badge_Grade)
 [![Build status](https://ci.appveyor.com/api/projects/status/dp9v07hx6cc6f8r5?svg=true)](https://ci.appveyor.com/project/Borda/pygridcut)
 
 A Python wrapper for the [GridCut C++ library](http://www.gridcut.com/index.php) for solving graph cuts in regular grids.
