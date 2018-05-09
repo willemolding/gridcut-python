@@ -60,7 +60,7 @@ setup(
     cmdclass={'build_ext': BuildExt},
     ext_modules=[Extension(
         'gridcut',
-        ['gridcut.pyx', 'wrapper_gridCut.cpp'],
+        ['gridcut.cpp'],
         language='c++',
         include_dirs=[PATH_GRIDCUT, PATH_ALPHAEXP],
         extra_compile_args=["-fpermissive"]
